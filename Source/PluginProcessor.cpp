@@ -20,6 +20,7 @@ static juce::String smoothTime("smoothTime");
 static juce::String offset("offset");
 static juce::String cv("CentralValue");
 static juce::String Freq("Freq");
+static juce::String WetDry("WetDry");
 
 //==============================================================================
 
@@ -31,6 +32,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout AndrewsAdaptiveFilter::creat
   layout.add(std::make_unique<juce::AudioParameterFloat>(offset, "Offset (dB)", juce::NormalisableRange<float>(-80,50,0.01), -30));
   layout.add(std::make_unique<juce::AudioParameterFloat>(cv, "Test", juce::NormalisableRange<float>(0,22050,1), 0));
   layout.add(std::make_unique<juce::AudioParameterFloat>(Freq, "Select Frequency (Hz)", juce::NormalisableRange(/* min */ 20.0f, /* max */ 4000.0f, /* step */ 1.0f), /* default */ 1000.0f));
+  layout.add(std::make_unique<juce::AudioParameterFloat>(WetDry, "Attenuation Amount", juce::NormalisableRange(/* min */ 0.0f, /* max */ 1.0f, /* step */ 0.01f), /* default */ 0.0f));
 
   return layout;
 }
@@ -72,6 +74,7 @@ AndrewsAdaptiveFilter::AndrewsAdaptiveFilter()
   // Attach your parameters to your listeners here...
   treeState.addParameterListener(smoothTime, this);
   treeState.addParameterListener(offset, this);
+  treeState.addParameterListener(WetDry, this);
     
     CentralVal = treeState.getParameterAsValue(cv);
     CentralVal = 0;
@@ -165,12 +168,10 @@ void AndrewsAdaptiveFilter::prepareToPlay (double sampleRate, int samplesPerBloc
     
     CompiledFaustP->init(sampleRate);
     CompiledFaustUIP->setParamValue("Freq", 200);
+    CompiledFaustUIP->setParamValue("WetDry", 0);
     
     leaky = std::exp(-(FFT_SIZE) / (400 * 0.001 * fs));
-    
-    thePRE = 50;
-    thePOST = 50;
-    
+
     preparedToPlay = true;
 }
 
@@ -295,7 +296,7 @@ void AndrewsAdaptiveFilter::processBlock (juce::AudioBuffer<float>& buffer, juce
         max_val = frequency/binSize;
     }
     CentralVal = frequency;
-    CompiledFaustUIP->setParamValue("Freq",frequency - (frequency*0.25));
+    CompiledFaustUIP->setParamValue("Freq",frequency);
 
 }
 
@@ -312,6 +313,9 @@ void AndrewsAdaptiveFilter::parameterChanged(const juce::String &parameterID, fl
         off_val = newValue;
         fftPlot->set_db_offset(off_val);
         fftPlot_thespot->set_db_offset(off_val);
+    }
+    if (parameterID == WetDry) {
+        CompiledFaustUIP->setParamValue("WetDry",newValue);
     }
 }
 
