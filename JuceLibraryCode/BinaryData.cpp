@@ -87,6 +87,7 @@ static const unsigned char temp_binary_data_0[] =
 "    <View class=\"parameters nomargin\">\r\n"
 "      <Slider caption=\"Smooth Time (ms)\" parameter=\"smoothTime\" slider-type=\"rotary-horizontal-vertical\"/>\r\n"
 "      <Slider caption=\"Offset (dB)\" parameter=\"offset\" slider-type=\"rotary-horizontal-vertical\"/>\r\n"
+"      <Slider parameter=\"WetDry\" slider-type=\"rotary-horizontal-vertical\" caption=\"Attenuation Amount\"/>\r\n"
 "    </View>\r\n"
 "  </View>\r\n"
 "</magic>\r\n";
@@ -105,7 +106,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
 
     switch (hash)
     {
-        case 0x815084b6:  numBytes = 7194; return layout_3_xml;
+        case 0x815084b6:  numBytes = 7300; return layout_3_xml;
         default: break;
     }
 

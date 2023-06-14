@@ -59,6 +59,7 @@
     <View class="parameters nomargin">
       <Slider caption="Smooth Time (ms)" parameter="smoothTime" slider-type="rotary-horizontal-vertical"/>
       <Slider caption="Offset (dB)" parameter="offset" slider-type="rotary-horizontal-vertical"/>
+      <Slider parameter="WetDry" slider-type="rotary-horizontal-vertical" caption="Attenuation Amount"/>
     </View>
   </View>
 </magic>

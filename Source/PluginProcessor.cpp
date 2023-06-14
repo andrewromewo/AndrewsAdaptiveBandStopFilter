@@ -246,10 +246,11 @@ void AndrewsAdaptiveFilter::processBlock (juce::AudioBuffer<float>& buffer, juce
             {
                 fftData[i] = newFftData[i] * (1 - leaky) + oldFftData[i] * leaky;
                 oldFftData[i] = fftData[i];
-                if (i > int(max_val)) {
+                if ((i > int(top_val))|(i < int(bottom_val))) {
                     fftData_thespot[i] = fftData[i];
                 } else {
-                    fftData_thespot[i] = 0;
+                    auto x = CompiledFaustUIP->getParamValue("WetDry");
+                    fftData_thespot[i] = fftData[i]*(1-x);
                 }
             }
             
@@ -290,11 +291,9 @@ void AndrewsAdaptiveFilter::processBlock (juce::AudioBuffer<float>& buffer, juce
     CompiledFaustP->compute(buffer.getNumSamples(), bufferPointersFaust, bufferPointersFaust);
 
     float frequency = max_val*binSize;
-    if (frequency > 1500) {
-        frequency = 1500;
-//        std::cout<<max_val<<std::endl;
-        max_val = frequency/binSize;
-    }
+    if (frequency > 18000) frequency = 18000;
+    bottom_val = int((frequency - frequency*0.2)/binSize);
+    top_val = int((frequency + frequency*0.2)/binSize);
     CentralVal = frequency;
     CompiledFaustUIP->setParamValue("Freq",frequency);
 

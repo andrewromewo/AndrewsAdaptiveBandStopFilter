@@ -85,6 +85,9 @@ private:
     MapUI CompiledFaustUI;
     
     std::size_t max_val;
+    
+    std::size_t bottom_val;
+    std::size_t top_val;
 
 
   // FFT SETUP
